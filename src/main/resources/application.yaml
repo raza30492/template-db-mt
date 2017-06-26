@@ -1,0 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    dataSourceClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tnt_db_master
+    username: mdzahidraza
+    password: zahid
+  jpa:
+    show-sql: true
+    format-sql: true
+#    generate-ddl: true
+    hibernate:
+      ddl-auto: update
