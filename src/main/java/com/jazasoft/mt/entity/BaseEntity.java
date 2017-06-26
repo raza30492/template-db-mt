@@ -29,6 +29,22 @@ public class BaseEntity {
     @Column(name = "enabled")
     protected Boolean enabled;
 
+    public BaseEntity() {
+    }
+
+    public BaseEntity(Long id) {
+        this.id = id;
+    }
+
+    public BaseEntity(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public BaseEntity(Long id, Boolean enabled) {
+        this.id = id;
+        this.enabled = enabled;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }

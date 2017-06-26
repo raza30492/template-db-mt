@@ -52,7 +52,7 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "credential_expired")
     private boolean credentialsExpired;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
 
@@ -65,6 +65,18 @@ public class User extends BaseEntity implements UserDetails{
     private Set<Role> roles = new HashSet<>();
 
     public User() {
+    }
+
+    public User(String name, String username, String email, String password, String mobile,boolean enabled, boolean accountExpired, boolean accountLocked, boolean credentialsExpired) {
+        super(enabled);
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        setPassword(password);
+        this.mobile = mobile;
+        this.accountExpired = accountExpired;
+        this.accountLocked = accountLocked;
+        this.credentialsExpired = credentialsExpired;
     }
 
     public User(String name, String username, String email, String password, String mobile) {
@@ -104,7 +116,7 @@ public class User extends BaseEntity implements UserDetails{
         return enabled;
     }
 
-    private void addRole(Role role){
+    public void addRole(Role role){
         roles.add(role);
     }
 

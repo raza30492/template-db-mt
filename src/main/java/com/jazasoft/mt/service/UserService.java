@@ -32,7 +32,13 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        user.setPassword(user.getMobile());
+        if (user.getPassword() == null) {
+            user.setPassword(user.getMobile());
+        }
         return userRepository.save(user);
+    }
+
+    public long count() {
+        return userRepository.count();
     }
 }

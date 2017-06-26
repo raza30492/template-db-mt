@@ -21,21 +21,21 @@ import java.util.Optional;
 public class MyUserDetailsService implements UserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyUserDetailsService.class);
     @Autowired
-    private UserRepository userDao;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LOGGER.trace("Looking for user for {}", username);
         try {
-            Optional<User> user = userDao.findOneByUsername(username);
+            Optional<User> user = userRepository.findOneByUsername(username);
             if (!user.isPresent()) {
-                user = userDao.findOneByEmail(username);
+                user = userRepository.findOneByEmail(username);
                 if (!user.isPresent()) {
-                    LOGGER.info("USER NOT PRESENT for {} {}", username, user);
+                    LOGGER.info("USER NOT PRESENT for {}", username);
                     throw new UsernameNotFoundException("user not found");
                 }
             }
-            LOGGER.trace("Found user for {} {}", username, user);
+            LOGGER.trace("Found user for {}", username);
             return user.get();
         } catch (Exception e) {
             LOGGER.error("Error loading user {}", username, e);

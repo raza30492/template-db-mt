@@ -3,9 +3,13 @@ server:
 
 spring:
   datasource:
-    dataSourceClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tnt_db_master
-    username: mdzahidraza
+#    dataSourceClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/tnt_db_master
+#    username: mdzahidraza
+#    password: zahid
+    dataSourceClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
+    username: root
     password: zahid
   jpa:
     show-sql: true
@@ -13,3 +17,17 @@ spring:
 #    generate-ddl: true
     hibernate:
       ddl-auto: update
+
+security:
+  filter-order: 0
+  oauth2:
+    resource:
+      id: TEST_RESOURCE
+      filter-order: 3
+    client:
+      client1:
+        access-token-validity: 3600
+        refresh-token-validity: 7200
+        id: client
+        secret: secret
+        scope: read,write,trust

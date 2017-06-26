@@ -27,12 +27,20 @@ public class Role {
         this.id = id;
     }
 
+    public Role() {
+    }
+
+    public Role(String name, String description) {
+        setName(name);
+        this.description = description;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = "ROLE_" + name;
     }
 
     public String getDescription() {
@@ -41,5 +49,14 @@ public class Role {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

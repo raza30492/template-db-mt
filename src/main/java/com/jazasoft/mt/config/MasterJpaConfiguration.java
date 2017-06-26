@@ -4,6 +4,8 @@ import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.cfg.Environment;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
@@ -36,6 +38,7 @@ import java.util.Properties;
 )
 @EnableTransactionManagement
 public class MasterJpaConfiguration {
+    private final Logger LOGGER = LoggerFactory.getLogger(MasterJpaConfiguration.class);
 
     @Autowired
     private JpaProperties jpaProperties;
@@ -55,6 +58,7 @@ public class MasterJpaConfiguration {
 
     @Bean
     public DataSource dataSource(){
+        LOGGER.debug("datasource url = {}" , url);
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(dataSourceClassName);
         dataSource.setUrl(url);
