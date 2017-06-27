@@ -11,5 +11,6 @@ public class ApiUrls {
     public static final String URL_ROLES_ROLE = "{roleId}";
     public static final String ROOT_URL_COMPANIES = "/api/companies";
     public static final String URL_COMPANIES_COMPANY = "{companyId}";
-
+    public static final String ROOT_URL_PRODUCTS = "/api/products";
+    public static final String URL_PRODUCTS_PRODUCT = "{productId}";
 }

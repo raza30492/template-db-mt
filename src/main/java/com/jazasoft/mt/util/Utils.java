@@ -9,6 +9,11 @@ import java.net.URISyntaxException;
  * @author Zakir Magdum
  */
 public class Utils {
+
+    public static String getAppHome() {
+        return System.getenv("TEMPLATE_DB_HOME");
+    }
+
     public static String databaseNameFromJdbcUrl(String url) {
         try {
             URI uri = new URI(url.replace("jdbc:", ""));

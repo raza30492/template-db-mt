@@ -4,7 +4,10 @@ package com.jazasoft.mt.config;
 import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,21 +40,22 @@ import java.util.Properties;
 )
 @EnableTransactionManagement
 public class TenantJpaConfiguration {
-
-    @Autowired
-    private JpaProperties jpaProperties;
+    private final Logger LOGGER = LoggerFactory.getLogger(TenantJpaConfiguration.class);
 
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         return new HibernateJpaVendorAdapter();
     }
 
-    @Primary
+    //@Primary
     @Bean(name = "tenantEntityManager")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
                                                                        MultiTenantConnectionProvider connectionProvider,
                                                                        CurrentTenantIdentifierResolver tenantResolver) {
+        LOGGER.debug("-$$$- tenantEntityManager()");
+
         LocalContainerEntityManagerFactoryBean emfBean = new LocalContainerEntityManagerFactoryBean();
+        emfBean.setPersistenceUnitName("tenant");
         emfBean.setDataSource(dataSource);
         emfBean.setPackagesToScan("com.jazasoft.mt.entity.tenant");
         emfBean.setJpaVendorAdapter(jpaVendorAdapter());
@@ -61,26 +65,19 @@ public class TenantJpaConfiguration {
         properties.put(org.hibernate.cfg.Environment.MULTI_TENANT_CONNECTION_PROVIDER, connectionProvider);
         properties.put(org.hibernate.cfg.Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantResolver);
 
-        properties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
-        emfBean.setJpaProperties(additionalJpaProperties(dataSource));
+        properties.put("hibernate.implicit_naming_strategy", "jpa");
+        //properties.put("hibernate.hbm2ddl.auto","update");
         emfBean.setJpaPropertyMap(properties);
         return emfBean;
     }
 
-    @Primary
+    //@Primary
     @Bean(name = "tenantTransactionManager")
-    public JpaTransactionManager transactionManager(EntityManagerFactory tenantEntityManager){
+    public JpaTransactionManager transactionManager(@Qualifier("tenantEntityManager") EntityManagerFactory tenantEntityManager){
+        LOGGER.debug("-$$$- tenantTransactionManager()");
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(tenantEntityManager);
         return transactionManager;
     }
 
-    @Autowired
-    private Properties additionalJpaProperties(DataSource dataSource) {
-        Properties properties = new Properties();
-        for (Map.Entry<String, String> entry : jpaProperties.getHibernateProperties(dataSource).entrySet()) {
-            properties.setProperty(entry.getKey(), entry.getValue());
-        }
-        return properties;
-    }
 }

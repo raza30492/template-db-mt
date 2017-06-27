@@ -7,11 +7,15 @@ import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -43,35 +47,21 @@ public class MasterJpaConfiguration {
     @Autowired
     private JpaProperties jpaProperties;
 
-    @Value("${spring.datasource.url}")
-    private String url;
-
-    @Value("${spring.datasource.dataSourceClassName}")
-    private String dataSourceClassName;
-
-    @Value("${spring.datasource.username}")
-    private String user;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-
     @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource(){
-        LOGGER.debug("datasource url = {}" , url);
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(dataSourceClassName);
-        dataSource.setUrl(url);
-        dataSource.setUsername(user);
-        dataSource.setPassword(password);
-        return dataSource;
+        LOGGER.debug("-$$$- datasource()");
+        return DataSourceBuilder.create().build();
     }
 
+    @Primary
     @Autowired
     @Bean(name = "masterEntityManager")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+        LOGGER.debug("-$$$- masterEntityManager()");
         JpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setPersistenceUnitName("master");
         em.setDataSource(dataSource);
         em.setPackagesToScan("com.jazasoft.mt.entity.master");
         em.setJpaVendorAdapter(jpaVendorAdapter);
@@ -79,8 +69,10 @@ public class MasterJpaConfiguration {
         return em;
     }
 
+    @Primary
     @Bean(name = "masterTransactionManager")
-    public JpaTransactionManager transactionManager(EntityManagerFactory masterEntityManager){
+    public JpaTransactionManager transactionManager(@Qualifier("masterEntityManager") EntityManagerFactory masterEntityManager){
+        LOGGER.debug("-$$$- masterTransactionManager()");
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(masterEntityManager);
         return transactionManager;

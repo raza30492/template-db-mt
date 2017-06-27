@@ -19,6 +19,7 @@ public class CompanyRestController {
     @Autowired
     private CompanyService companyService;
 
+    @GetMapping
     public ResponseEntity<?> getCompanies() {
         List<Company> companies = companyService.findAll();
         return ResponseEntity.ok(companies);

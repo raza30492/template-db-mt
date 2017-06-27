@@ -42,14 +42,12 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
                     user = uo.get();
                 }
             }
-            if (user != null) {
+            if (user != null && user.getCompany() != null) {
                 req.setAttribute(Constants.CURRENT_TENANT_IDENTIFIER, user.getCompany().getDbName());
                 tenantSet = true;
             }else {
-                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                res.getWriter().write("{\"error\": \"Unknown Tenant\"}");
-                res.getWriter().flush();
+                req.setAttribute(Constants.CURRENT_TENANT_IDENTIFIER, Constants.UNKNOWN_TENANT);
+                tenantSet = true;
             }
         }
 //

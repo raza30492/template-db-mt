@@ -12,7 +12,7 @@ import java.util.List;
  * Created by mdzahidraza on 26/06/17.
  */
 @Service
-@Transactional(value = "masterTransactionManager", readOnly = true)
+@Transactional(value = "masterTransactionManager")
 public class UserService {
 
     UserRepository userRepository;
@@ -30,7 +30,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @Transactional
     public User save(User user) {
         if (user.getPassword() == null) {
             user.setPassword(user.getMobile());

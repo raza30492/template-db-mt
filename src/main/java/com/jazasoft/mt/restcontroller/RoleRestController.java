@@ -19,6 +19,7 @@ public class RoleRestController {
     @Autowired
     private RoleService roleService;
 
+    @GetMapping
     public ResponseEntity<?> getRoles() {
         List<Role> roles = roleService.findAll();
         return ResponseEntity.ok(roles);

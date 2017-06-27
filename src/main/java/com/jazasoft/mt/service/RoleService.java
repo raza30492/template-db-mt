@@ -15,7 +15,7 @@ import java.util.Optional;
  * Created by mdzahidraza on 26/06/17.
  */
 @Service
-@Transactional(value = "masterTransactionManager", readOnly = true)
+@Transactional(value = "masterTransactionManager")
 public class RoleService {
     private final Logger LOGGER = LoggerFactory.getLogger(RoleService.class);
 
@@ -40,7 +40,6 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
-    @Transactional
     public Role save(Role role) {
         LOGGER.debug("save: role = {}", role);
         return roleRepository.save(role);

@@ -1,16 +1,18 @@
 server:
-  port: 8083
+  port: 8085
 
 spring:
   datasource:
-#    dataSourceClassName: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:5432/tnt_db_master
-#    username: mdzahidraza
-#    password: zahid
-    dataSourceClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
-    username: root
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tnt_db_master
+    username: mdzahidraza
     password: zahid
+    platform: postgresql
+#    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
+#    username: root
+#    password: zahid
+#    platform: mysql
   jpa:
     show-sql: true
     format-sql: true

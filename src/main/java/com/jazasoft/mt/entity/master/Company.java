@@ -1,5 +1,6 @@
 package com.jazasoft.mt.entity.master;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jazasoft.mt.entity.BaseEntity;
 
 import javax.persistence.CascadeType;
@@ -24,6 +25,7 @@ public class Company extends BaseEntity {
     @Column(name = "db_name")
     private String dbName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private Set<User> users = new HashSet<>();
 
