@@ -18,20 +18,4 @@ public class WebSecurityGlobalConfig extends GlobalAuthenticationConfigurerAdapt
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
-//    @Bean
-//    protected UserDetailsService userDetailsService() {
-//        return (email) -> {
-//            UserDto user;
-//            if(email.contains("@")){
-//                user = userService.findByEmail(email);
-//            }else{
-//                user = userService.findByUsername(email);
-//            }
-//            if (user != null) {
-//                return new User(user.getName(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getRole()));
-//            } else {
-//                throw new UsernameNotFoundException("Could not find the user '" + email + "'");
-//            }
-//        };
-//    }
 }

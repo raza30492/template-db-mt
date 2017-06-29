@@ -13,4 +13,6 @@ public class ApiUrls {
     public static final String URL_COMPANIES_COMPANY = "{companyId}";
     public static final String ROOT_URL_PRODUCTS = "/api/products";
     public static final String URL_PRODUCTS_PRODUCT = "{productId}";
+    public static final String ROOT_URL_INTERCEPTORS = "/api/interceptors";
+    public static final String URL_INTERCEPTORS_INTERCEPTOR = "{interceptorId}";
 }
