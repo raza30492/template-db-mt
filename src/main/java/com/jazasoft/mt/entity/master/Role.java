@@ -1,9 +1,6 @@
 package com.jazasoft.mt.entity.master;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by mdzahidraza on 26/06/17.
@@ -18,6 +15,10 @@ public class Role {
     private String name;
 
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     public Long getId() {
         return id;
@@ -49,6 +50,14 @@ public class Role {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     @Override
