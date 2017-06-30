@@ -6,14 +6,12 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -25,7 +23,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by mdzahidraza on 26/06/17.
@@ -39,8 +36,8 @@ import java.util.Properties;
         basePackages = "com.jazasoft.mt.repository.tenant"
 )
 @EnableTransactionManagement
-public class TenantJpaConfiguration {
-    private final Logger LOGGER = LoggerFactory.getLogger(TenantJpaConfiguration.class);
+public class TenantPersistenceContext {
+    private final Logger LOGGER = LoggerFactory.getLogger(TenantPersistenceContext.class);
 
     @Bean
     public JpaVendorAdapter jpaVendorAdapter() {

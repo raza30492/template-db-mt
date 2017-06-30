@@ -1,14 +1,9 @@
 package com.jazasoft.mt.config;
 
-import org.hibernate.MultiTenancyStrategy;
-import org.hibernate.cfg.Environment;
-import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
-import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -26,7 +20,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -41,8 +34,8 @@ import java.util.Properties;
         basePackages = "com.jazasoft.mt.repository.master"
 )
 @EnableTransactionManagement
-public class MasterJpaConfiguration {
-    private final Logger LOGGER = LoggerFactory.getLogger(MasterJpaConfiguration.class);
+public class MasterPersistenceContext {
+    private final Logger LOGGER = LoggerFactory.getLogger(MasterPersistenceContext.class);
 
     @Autowired
     private JpaProperties jpaProperties;
