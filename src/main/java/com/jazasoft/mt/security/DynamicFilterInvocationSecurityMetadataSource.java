@@ -39,6 +39,7 @@ public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilter
         String httpMethod = fi.getRequest().getMethod();
 
         if (url != null) {
+            url = url.split("\\?")[0];
             String[] urls = url.split("/");
             Pattern pattern = Pattern.compile("\\d+");
             for (int i = 0; i < urls.length; i++) {
@@ -59,11 +60,10 @@ public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilter
                     .filter(in -> in.getHttpMethod() == null || in.getHttpMethod().equals(httpMethod))
                     .map(in -> new DynamicConfigAttribute(in.getAccess()))
                     .collect(Collectors.toList());
-
-            configAttributes.forEach(configAttribute -> System.out.println("-$$$- " + configAttribute.getAttribute()));
             if (configAttributes.isEmpty()) {
                 configAttributes.add(new DynamicConfigAttribute("ROLE_UNKNOWN"));
             }
+            configAttributes.forEach(configAttribute -> System.out.println("-$$$- " + configAttribute.getAttribute()));
             return configAttributes;
         }
         return null;

@@ -21,7 +21,13 @@ spring:
     format-sql: true
 #    generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+    properties:
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _history
+
 
 security:
   filter-order: 0
@@ -36,3 +42,7 @@ security:
         id: client
         secret: secret
         scope: read,write,trust
+
+
+
+#        spring.jpa.properties.org.hibernate.envers.audit_table_suffix=app_audit

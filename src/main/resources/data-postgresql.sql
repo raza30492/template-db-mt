@@ -20,8 +20,8 @@ SELECT pg_catalog.setval('role_id_seq', 2, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: mdzahidraza
 --
 
-INSERT INTO users (id, created_at, enabled, modified_at, account_expired, account_locked, credential_expired, email, mobile, name, otp, otp_sent_at, password, retry_count, username, company_id) VALUES
-(1,	'2017-06-28 00:25:42.25',	true,	'2017-06-28 00:25:42.25',	false,	false,	false,	'zahid7292@gmail.com', '8987525008',	'Md Zahid Raza',	NULL,	NULL,	'$2a$10$8gha167uTM3jhArZwFk6UOxgNChnMhWfrR59ND/TtzvTynwo2129C',	NULL,	'zahid7292',	NULL);
+INSERT INTO users (id, modified_at, enabled, account_expired, account_locked, credential_expired, email, mobile, name, otp, otp_sent_at, password, retry_count, username, company_id) VALUES
+(1,	'2017-06-28 00:25:42.25',	true, false,	false,	false,	'zahid7292@gmail.com', '8987525008',	'Md Zahid Raza',	NULL,	NULL,	'$2a$10$8gha167uTM3jhArZwFk6UOxgNChnMhWfrR59ND/TtzvTynwo2129C',	NULL,	'zahid7292',	NULL);
 
 
 

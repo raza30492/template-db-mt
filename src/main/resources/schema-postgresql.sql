@@ -40,8 +40,7 @@ SET default_with_oids = false;
 
 CREATE TABLE company (
     id bigint NOT NULL,
-    created_at timestamp without time zone,
-    enabled boolean,
+    enabled boolean NOT NULL,
     modified_at timestamp without time zone,
     address character varying(255),
     db_name character varying(255),
@@ -80,7 +79,8 @@ ALTER SEQUENCE company_id_seq OWNED BY company.id;
 CREATE TABLE role (
     id bigint NOT NULL,
     description character varying(255),
-    name character varying(255)
+    name character varying(255),
+    company_id bigint
 );
 
 
@@ -112,8 +112,7 @@ ALTER SEQUENCE role_id_seq OWNED BY role.id;
 
 CREATE TABLE users (
     id bigint NOT NULL,
-    created_at timestamp without time zone,
-    enabled boolean,
+    enabled boolean NOT NULL,
     modified_at timestamp without time zone,
     account_expired boolean,
     account_locked boolean,
@@ -151,6 +150,7 @@ ALTER TABLE users_id_seq OWNER TO mdzahidraza;
 --
 
 ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
 
 --
 -- Name: user_role; Type: TABLE; Schema: public; Owner: mdzahidraza
@@ -224,6 +224,22 @@ ALTER TABLE ONLY url_interceptor ALTER COLUMN id SET DEFAULT nextval('url_interc
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+----------------------
+
+--
+-- Name: revinfo; Type: TABLE; Schema: public; Owner: mdzahidraza
+--
+
+CREATE TABLE revinfo (
+    rev integer NOT NULL,
+    revtstmp bigint
+);
+
+
+ALTER TABLE revinfo OWNER TO mdzahidraza;
+
+----------------------
 
 --
 -- Name: company company_pkey; Type: CONSTRAINT; Schema: public; Owner: mdzahidraza

@@ -2,6 +2,8 @@ package com.jazasoft.mt.security;
 
 import com.jazasoft.mt.repository.master.UrlInterceptorRepository;
 import com.jazasoft.mt.service.InterceptorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,7 @@ import java.util.LinkedHashMap;
 @Configuration
 @EnableResourceServer
 public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
+    private final Logger LOGGER = LoggerFactory.getLogger(OAuth2ResourceServerConfig.class);
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -77,7 +80,24 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
      */
     @Bean
     public AccessDecisionManager accessDecisionManager() {
-        return new AffirmativeBased(Arrays.asList(new ScopeVoter(),new RoleVoter(),new AuthenticatedVoter()));
+        RoleVoter roleVoter = new RoleVoter(){
+            @Override
+            public int vote(Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
+                LOGGER.trace("Authorities are :");
+                authentication.getAuthorities().forEach(auth -> {
+                    LOGGER.trace("-$$$- {}", auth.getAuthority());
+                });
+                LOGGER.trace("Attributes are :");
+                attributes.forEach(attr -> {
+                    LOGGER.trace("-$$$- {}", attr.getAttribute());
+                });
+                int vote =  super.vote(authentication, object, attributes);
+                LOGGER.trace("vote is: {}", vote);
+                return vote;
+            }
+        };
+
+        return new AffirmativeBased(Arrays.asList(new ScopeVoter(),roleVoter ,new AuthenticatedVoter()));
     }
 }
 

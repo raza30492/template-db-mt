@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -33,7 +34,8 @@ import java.util.Map;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "tenantEntityManager",
         transactionManagerRef = "tenantTransactionManager",
-        basePackages = "com.jazasoft.mt.repository.tenant"
+        basePackages = "com.jazasoft.mt.repository.tenant",
+        repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class
 )
 @EnableTransactionManagement
 public class TenantPersistenceContext {
@@ -63,7 +65,8 @@ public class TenantPersistenceContext {
         properties.put(org.hibernate.cfg.Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantResolver);
 
         properties.put("hibernate.implicit_naming_strategy", "jpa");
-        //properties.put("hibernate.hbm2ddl.auto","update");
+//        properties.put("hibernate.hbm2ddl.auto","update");
+//        properties.put("spring.jpa.properties.org.hibernate.envers.audit_table_suffix","_history");
         emfBean.setJpaPropertyMap(properties);
         return emfBean;
     }

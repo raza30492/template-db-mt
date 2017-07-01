@@ -32,11 +32,13 @@ public class UserRestController {
 
     @GetMapping(ApiUrls.URL_USERS_USER)
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId){
-        User user = userService.findOne(userId);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+//        User user = userService.findOne(userId);
+//        if (user == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.ok(user);
+        userService.findLastChangeRevision(userId);
+        return ResponseEntity.ok("OK");
     }
 
     @PostMapping
@@ -46,4 +48,10 @@ public class UserRestController {
     }
 
 
+    @PutMapping(ApiUrls.URL_USERS_USER)
+    public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody User user){
+        user.setId(userId);
+        user = userService.update(user);
+        return ResponseEntity.ok(user);
+    }
 }

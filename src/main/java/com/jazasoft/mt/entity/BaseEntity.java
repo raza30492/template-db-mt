@@ -1,6 +1,8 @@
 package com.jazasoft.mt.entity;
 
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -8,7 +10,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by mdzahidraza on 26/06/17.
+ * Created by mdzahidraza on 01/07/17.
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -18,46 +20,26 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @CreatedDate
-    @Column(name = "created_at")
-    protected Date createdAt;
-
     @LastModifiedDate
-    @Column(name = "updated_at")
-    protected Date updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified_at")
+    protected Date modifiedAt;
 
-    @Column(name = "enabled")
-    protected Boolean enabled;
+    protected boolean enabled;
 
     public BaseEntity() {
+    }
+
+    public BaseEntity(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public BaseEntity(Long id) {
         this.id = id;
     }
 
-    public BaseEntity(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public BaseEntity(Long id, Boolean enabled) {
+    public BaseEntity(Long id, boolean enabled) {
         this.id = id;
-        this.enabled = enabled;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -69,11 +51,19 @@ public class BaseEntity {
         this.id = id;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public Date getModifiedAt() {
+        return modifiedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
