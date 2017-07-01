@@ -1,12 +1,13 @@
 package com.jazasoft.mt.entity.master;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by mdzahidraza on 26/06/17.
  */
 @Entity
-public class Role {
+public class Role implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

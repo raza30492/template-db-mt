@@ -3,30 +3,32 @@ server:
 
 spring:
   datasource:
+    ###### PostgreSQL Configuration #######
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/tnt_db_master
     username: mdzahidraza
     password: zahid
     platform: postgresql
     initialize: true
-    continue-on-error: true
-
+    continue-on-error: false
+    #####  MySQL Configuration #######
 #    driverClassName: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
 #    username: root
 #    password: zahid
 #    platform: mysql
+#    initialize: true
+#    continue-on-error: true
   jpa:
     show-sql: true
     format-sql: true
-#    generate-ddl: true
     hibernate:
-      ddl-auto: none
-    properties:
-      org:
-        hibernate:
-          envers:
-            audit_table_suffix: _history
+      ddl-auto: update
+#    properties:
+#      org:
+#        hibernate:
+#          envers:
+#            audit_table_suffix: _history
 
 
 security:
@@ -42,6 +44,14 @@ security:
         id: client
         secret: secret
         scope: read,write,trust
+
+endpoints:
+  auditevents:
+    enabled: true
+    sensitive: false
+  metrics:
+    enabled: true
+    sensitive: false
 
 
 

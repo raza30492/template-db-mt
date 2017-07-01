@@ -328,6 +328,102 @@ ALTER TABLE ONLY user_role
     ADD CONSTRAINT fkj345gk1bovqvfame88rcx7yyx FOREIGN KEY (user_id) REFERENCES users(id);
 
 
+
+
+
+
+
+--------------------------
+--- Creating tables for JdbcTokenStore
+---------------------------
+
+
+--
+-- Name: oauth_client_details; Type: TABLE; Schema: public; Owner: mdzahidraza
+--
+
+CREATE TABLE oauth_client_details (
+    client_id character varying(255),
+    resource_ids character varying(255),
+    client_secret character varying(255),
+    scope character varying(255),
+    authorized_grant_types character varying(255),
+    web_server_redirect_uri character varying(255),
+    authorities character varying(255),
+    access_token_validity integer,
+    refresh_token_validity integer,
+    additional_information character varying(4096)
+);
+
+
+ALTER TABLE oauth_client_details OWNER TO mdzahidraza;
+
+--
+-- Name: oauth_client_details oauth_client_details_pkey; Type: CONSTRAINT; Schema: public; Owner: mdzahidraza
+--
+
+ALTER TABLE ONLY oauth_client_details
+    ADD CONSTRAINT oauth_client_details_pkey PRIMARY KEY (client_id);
+ 
+
+CREATE TABLE  oauth_client_token (
+   token_id character varying(256),
+   token bytea,
+   authentication_id character varying(256),
+   user_name character varying(256),
+   client_id character varying(256)
+);
+ 
+CREATE TABLE  oauth_access_token (
+   token_id character varying(256),
+   token bytea,
+   authentication_id character varying(256),
+   user_name character varying(256),
+   client_id character varying(256),
+   authentication bytea,
+   refresh_token character varying(256)
+);
+ 
+CREATE TABLE  oauth_refresh_token (
+   token_id character varying(256),
+   token bytea,
+   authentication bytea
+);
+ 
+CREATE TABLE  oauth_code (
+   code character varying(256),
+   authentication bytea
+);
+    
+
+--
+-- Name: client_details; Type: TABLE; Schema: public; Owner: mdzahidraza
+--
+
+-- customized oauth_client_details table
+CREATE TABLE client_details (
+    appId character varying(255),
+    resourceIds character varying(255),
+    appSecret character varying(255),
+    scope character varying(255),
+    grantTypes character varying(255),
+    redirectUrl character varying(255),
+    authorities character varying(255),
+    access_token_validity integer,
+    refresh_token_validity integer,
+    additional_information character varying(4096)
+);
+
+
+ALTER TABLE client_details OWNER TO mdzahidraza;
+
+--
+-- Name: client_details client_details_pkey; Type: CONSTRAINT; Schema: public; Owner: mdzahidraza
+--
+
+ALTER TABLE ONLY client_details
+    ADD CONSTRAINT client_details_pkey PRIMARY KEY (appId);
+
 --
 -- PostgreSQL database dump complete
 --
