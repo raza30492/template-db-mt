@@ -49,7 +49,12 @@
         <artifactId>postgresql</artifactId>
         <scope>runtime</scope>
         </dependency>
-
+        <!-- Adds support for Java 8 dates -->
+        <dependency>
+            <groupId>org.jadira.usertype</groupId>
+            <artifactId>usertype.extended</artifactId>
+            <version>5.0.0.GA</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

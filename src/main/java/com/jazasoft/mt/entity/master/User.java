@@ -4,6 +4,7 @@ import java.util.*;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jazasoft.mt.entity.Auditable;
 import com.jazasoft.mt.entity.BaseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,7 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "users", indexes = @Index(columnList = "name,email,username"))
-public class User extends BaseEntity implements UserDetails{
+public class User extends Auditable<String> implements UserDetails{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -52,6 +57,9 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "credential_expired")
     private boolean credentialsExpired;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
@@ -68,7 +76,6 @@ public class User extends BaseEntity implements UserDetails{
     }
 
     public User(String name, String username, String email, String password, String mobile,boolean enabled, boolean accountExpired, boolean accountLocked, boolean credentialsExpired) {
-        super(enabled);
         this.name = name;
         this.username = username;
         this.email = email;
@@ -77,6 +84,7 @@ public class User extends BaseEntity implements UserDetails{
         this.accountExpired = accountExpired;
         this.accountLocked = accountLocked;
         this.credentialsExpired = credentialsExpired;
+        this.enabled = enabled;
     }
 
     public User(String name, String username, String email, String password, String mobile) {
@@ -114,6 +122,18 @@ public class User extends BaseEntity implements UserDetails{
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public void addRole(Role role){
@@ -214,7 +234,7 @@ public class User extends BaseEntity implements UserDetails{
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", updatedAt=" + updatedAt +
+                ", modifiedAt=" + modifiedAt +
                 ", name='" + name + '\'' +
                 ", enabled=" + enabled +
                 ", username='" + username + '\'' +

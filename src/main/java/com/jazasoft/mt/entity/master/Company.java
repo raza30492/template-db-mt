@@ -1,12 +1,10 @@
 package com.jazasoft.mt.entity.master;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jazasoft.mt.entity.Auditable;
 import com.jazasoft.mt.entity.BaseEntity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +12,11 @@ import java.util.Set;
  * Created by mdzahidraza on 26/06/17.
  */
 @Entity
-public class Company extends BaseEntity {
+public class Company extends Auditable<String> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
 
@@ -25,9 +27,30 @@ public class Company extends BaseEntity {
     @Column(name = "db_name")
     private String dbName;
 
+    private boolean enabled;
+
     @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private Set<User> users = new HashSet<>();
+
+    public Company() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public String getName() {
         return name;
