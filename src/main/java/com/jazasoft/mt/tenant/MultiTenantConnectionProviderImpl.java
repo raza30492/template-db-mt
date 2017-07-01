@@ -154,16 +154,6 @@ public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMu
         }
 
     }
-//
-//    private Properties additionalProperties() {
-//
-//        Properties properties = new Properties();
-//        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-//        properties.setProperty("hibernate.hbm2ddl.auto", "update");
-//        properties.setProperty("hibernate.show_sql", "true");
-//        properties.setProperty("hibernate.format_sql", "true");
-//        return properties;
-//    }
 
 }
 

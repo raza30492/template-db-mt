@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableAuthorizationServer
-public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter implements EnvironmentAware{
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter implements EnvironmentAware{
     private static String REALM="MY_OAUTH_REALM";
     private static final String ENV_OAUTH2 = "security.oauth2.client.";
     
