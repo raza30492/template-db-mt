@@ -2,7 +2,6 @@ package com.jazasoft.mt.util;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -20,7 +19,7 @@ public class YamlUtilsTest {
 
     @Before
     public void setUp() {
-        yamlUtils = YamlUtils.getINSTANCE();
+        yamlUtils = YamlUtils.getInstance();
         String filename = Utils.getAppHome() + File.separator + "conf" + File.separator + "test.yaml";
         testFile = new File(filename);
     }

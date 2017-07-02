@@ -24,11 +24,6 @@ spring:
     format-sql: true
     hibernate:
       ddl-auto: none
-#    properties:
-#      org:
-#        hibernate:
-#          envers:
-#            audit_table_suffix: _history
 
 
 security:
@@ -37,17 +32,6 @@ security:
     resource:
       id: TEST_RESOURCE
       filter-order: 3
-    clients:
-      - access-token-validity: 43200
-        refresh-token-validity: 43200
-        id: client
-        secret: secret
-        scope: read,write,trust
-      - access-token-validity: 3600
-        refresh-token-validity: 7200
-        id: client-web
-        secret: secret-web
-        scope: read,write,trust
 
 endpoints:
   auditevents:
@@ -57,6 +41,3 @@ endpoints:
     enabled: true
     sensitive: false
 
-
-
-#        spring.jpa.properties.org.hibernate.envers.audit_table_suffix=app_audit

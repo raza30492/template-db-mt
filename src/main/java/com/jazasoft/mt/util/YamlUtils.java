@@ -35,7 +35,7 @@ public class YamlUtils {
         }
     }
 
-    public static YamlUtils getINSTANCE() {
+    public static YamlUtils getInstance() {
         if (INSTANCE == null)
             INSTANCE = new YamlUtils();
         return INSTANCE;
