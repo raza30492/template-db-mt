@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 /**
  * Utils.
  *
- * @author Zakir Magdum
+ * @author mdzahidraza
  */
 public class Utils {
 

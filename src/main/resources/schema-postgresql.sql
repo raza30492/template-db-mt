@@ -352,7 +352,8 @@ CREATE TABLE oauth_client_details (
     authorities character varying(255),
     access_token_validity integer,
     refresh_token_validity integer,
-    additional_information character varying(4096)
+    additional_information character varying(4096),
+    autoapprove character varying(255)
 );
 
 
@@ -397,11 +398,11 @@ CREATE TABLE  oauth_code (
     
 
 --
--- Name: client_details; Type: TABLE; Schema: public; Owner: mdzahidraza
+-- Name: ClientDetails; Type: TABLE; Schema: public; Owner: mdzahidraza
 --
 
 -- customized oauth_client_details table
-CREATE TABLE client_details (
+CREATE TABLE ClientDetails (
     appId character varying(255),
     resourceIds character varying(255),
     appSecret character varying(255),
@@ -415,14 +416,14 @@ CREATE TABLE client_details (
 );
 
 
-ALTER TABLE client_details OWNER TO mdzahidraza;
+ALTER TABLE ClientDetails OWNER TO mdzahidraza;
 
 --
--- Name: client_details client_details_pkey; Type: CONSTRAINT; Schema: public; Owner: mdzahidraza
+-- Name: ClientDetails ClientDetails_pkey; Type: CONSTRAINT; Schema: public; Owner: mdzahidraza
 --
 
-ALTER TABLE ONLY client_details
-    ADD CONSTRAINT client_details_pkey PRIMARY KEY (appId);
+ALTER TABLE ONLY ClientDetails
+    ADD CONSTRAINT ClientDetails_pkey PRIMARY KEY (appId);
 
 --
 -- PostgreSQL database dump complete

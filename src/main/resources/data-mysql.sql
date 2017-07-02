@@ -1,3 +1,8 @@
+--
+INSERT INTO oauth_client_details (client_id, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities,
+ access_token_validity, refresh_token_validity, additional_information, autoapprove) VALUES
+("client", "secret", "read,write,trust", "password,authorization_code,refresh_token,implicit", null, null, 43200, 43200, null, true),
+("client-web", "secret-web", "read,write,trust", "password,authorization_code,refresh_token,implicit", null, null, 3600, 7200, null, true);
 
 --
 -- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: mdzahidraza
