@@ -1,70 +1,85 @@
 package com.jazasoft.mt.security;
 
-import com.jazasoft.mt.util.YamlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 import javax.sql.DataSource;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
     private static String REALM="MY_OAUTH_REALM";
-    private static final String ENV_OAUTH2 = "security.oauth2.client.";
- 
+
+    @Autowired DataSource dataSource;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired TokenStore tokenStore;
- 
     @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-
-        List clientList = (List) YamlUtils.getINSTANCE().getAppProperty("security.oauth2.clients");
-
-        InMemoryClientDetailsServiceBuilder builder = clients.inMemory();
-        for (int i = 0; i < clientList.size(); i++) {
-            Map client = (Map) clientList.get(i);
-            builder
-                    .withClient((String) client.get("id"))
-                    .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-                    .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-                    .scopes((String) client.get("scope"))
-                    .secret((String) client.get("secret"))
-                    .accessTokenValiditySeconds(Integer.parseInt((String) (String) client.get("access-token-validity")))
-                    .refreshTokenValiditySeconds(Integer.parseInt((String) (String) client.get("refresh-token-validity")));
-        }
-    }
- 
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(tokenStore)
-                .authenticationManager(authenticationManager);
-    }
- 
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+    public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.realm(REALM+"/client");
     }
 
+    @Override
+    public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {// @formatter:off
+        clients.jdbc(dataSource);
+    }
+
+    @Override
+    public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer()));
+        endpoints.tokenStore(tokenStore())
+                .tokenEnhancer(tokenEnhancerChain).authenticationManager(authenticationManager);
+    }
+
+//
+//    @Bean
+//    @Primary
+//    public DefaultTokenServices tokenServices() {
+//        final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+//        defaultTokenServices.setTokenStore(tokenStore());
+//        defaultTokenServices.setSupportRefreshToken(true);
+//        return defaultTokenServices;
+//    }
+
     @Bean
-    public TokenStore tokenStore(DataSource dataSource) {
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
+    }
+
+    protected class CustomTokenEnhancer implements TokenEnhancer {
+        @Override
+        public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
+            final Map<String, Object> additionalInfo = new HashMap<>();
+            additionalInfo.put("organization", authentication.getName() + randomAlphabetic(4));
+            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
+            return accessToken;
+        }
     }
 }
