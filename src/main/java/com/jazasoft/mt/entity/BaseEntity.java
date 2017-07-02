@@ -22,7 +22,6 @@ public class BaseEntity {
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_at")
     protected Date modifiedAt;
 
     protected boolean enabled;

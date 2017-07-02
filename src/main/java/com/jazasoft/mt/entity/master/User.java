@@ -14,43 +14,36 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Table(name = "users", indexes = @Index(columnList = "name,email,username"))
 public class User extends BaseEntity implements UserDetails{
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @JsonIgnore
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "mobile")
     private String mobile;
 
     @JsonIgnore
-    @Column(name = "retry_count")
     private Integer retryCount;
 
     @JsonIgnore
-    @Column(name = "otp")
     private String otp;
 
     @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "otp_sent_at")
     private Date otpSentAt;
 
-    @Column(name = "account_expired")
     private boolean accountExpired;
 
-    @Column(name = "account_locked")
     private boolean accountLocked;
 
-    @Column(name = "credential_expired")
-    private boolean credentialsExpired;
+    private boolean credentialExpired;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
@@ -67,7 +60,7 @@ public class User extends BaseEntity implements UserDetails{
     public User() {
     }
 
-    public User(String name, String username, String email, String password, String mobile,boolean enabled, boolean accountExpired, boolean accountLocked, boolean credentialsExpired) {
+    public User(String name, String username, String email, String password, String mobile,boolean enabled, boolean accountExpired, boolean accountLocked, boolean credentialExpired) {
         super(enabled);
         this.name = name;
         this.username = username;
@@ -76,7 +69,7 @@ public class User extends BaseEntity implements UserDetails{
         this.mobile = mobile;
         this.accountExpired = accountExpired;
         this.accountLocked = accountLocked;
-        this.credentialsExpired = credentialsExpired;
+        this.credentialExpired = credentialExpired;
     }
 
     public User(String name, String username, String email, String password, String mobile) {
@@ -108,7 +101,7 @@ public class User extends BaseEntity implements UserDetails{
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return !credentialsExpired;
+        return !credentialExpired;
     }
 
     @Override
@@ -166,8 +159,8 @@ public class User extends BaseEntity implements UserDetails{
         this.accountLocked = accountLocked;
     }
 
-    public void setCredentialsExpired(boolean credentialsExpired) {
-        this.credentialsExpired = credentialsExpired;
+    public void setCredentialExpired(boolean credentialExpired) {
+        this.credentialExpired = credentialExpired;
     }
 
     public void setUsername(String username) {

@@ -64,9 +64,12 @@ public class TenantPersistenceContext {
         properties.put(org.hibernate.cfg.Environment.MULTI_TENANT_CONNECTION_PROVIDER, connectionProvider);
         properties.put(org.hibernate.cfg.Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantResolver);
 
-        properties.put("hibernate.implicit_naming_strategy", "jpa");
 //        properties.put("hibernate.hbm2ddl.auto","update");
-//        properties.put("spring.jpa.properties.org.hibernate.envers.audit_table_suffix","_history");
+
+        properties.put("hibernate.implicit_naming_strategy", "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
+        properties.put("hibernate.physical_naming_strategy", "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy");
+        properties.put("hibernate.id.new_generator_mappings", "false");
+        properties.put("org.hibernate.envers.audit_table_suffix","_history");
         emfBean.setJpaPropertyMap(properties);
         return emfBean;
     }

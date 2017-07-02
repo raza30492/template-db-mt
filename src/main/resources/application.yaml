@@ -4,26 +4,26 @@ server:
 spring:
   datasource:
     ###### PostgreSQL Configuration #######
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tnt_db_master
-    username: mdzahidraza
-    password: zahid
-    platform: postgresql
-    initialize: true
-    continue-on-error: false
-    #####  MySQL Configuration #######
-#    driverClassName: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
-#    username: root
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/tnt_db_master
+#    username: mdzahidraza
 #    password: zahid
-#    platform: mysql
+#    platform: postgresql
 #    initialize: true
 #    continue-on-error: true
+    #####  MySQL Configuration #######
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tnt_db_master?createDatabaseIfNotExist=true
+    username: root
+    password: zahid
+    platform: mysql
+    initialize: true
+    continue-on-error: true
   jpa:
     show-sql: true
     format-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 #    properties:
 #      org:
 #        hibernate:

@@ -69,7 +69,15 @@ INSERT INTO url_interceptor (id, access, http_method, url) VALUES
 (21,	'ROLE_MASTER',	'GET',	'/api/interceptors/{\\d+}'),
 (22,	'ROLE_MASTER',	'PUT',	'/api/interceptors/{\\d+}'),
 (23,	'ROLE_MASTER',	'PATCH',	'/api/interceptors/{\\d+}'),
-(24,	'ROLE_MASTER',	'DELETE',	'/api/interceptors/{\\d+}');
+(24,	'ROLE_MASTER',	'DELETE',	'/api/interceptors/{\\d+}'),
+(25,	'ROLE_ADMIN',	'POST', '/api/products'),
+(26,	'ROLE_ADMIN',	'GET',	'/api/products'),
+(27,	'ROLE_ADMIN',	'GET',	'/api/products/{\\d+}'),
+(28,	'ROLE_ADMIN',	'PUT',	'/api/products/{\\d+}'),
+(29,	'ROLE_ADMIN',	'PATCH',	'/api/products/{\\d+}'),
+(30,	'ROLE_ADMIN',	'DELETE',	'/api/products/{\\d+}'),
+(31,	'ROLE_MASTER',	'GET', '/metrics'),
+(32,	'ROLE_MASTER',	'GET',	'/auditevents');
 
 --
 -- Name: url_interceptor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: mdzahidraza

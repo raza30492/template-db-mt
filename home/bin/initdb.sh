@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ "$#" -ne 3 ]; then
-        echo "Usage: createdb <mysql|postgresql> <database name> <init script location>"
+if [ "$#" -ne 5 ]; then
+        echo "Usage: createdb <mysql|postgresql> <database name> <init script location> <db User> <dbPassword>"
         exit 1
 elif [[  "$1" != "mysql"  &&  "$1" != "postgresql"  ]]; then
-        echo "Usage: createdb <mysql|postgresql> <database name> <init script location>"
+        echo "Usage: createdb <mysql|postgresql> <database name> <init script location> <db User> <dbPassword>"
         exit 1
 elif [ ! -f "$3" ]; then
         echo "File $3 does not exist"
@@ -26,6 +26,14 @@ if [ "$1" = "postgresql" ]; then
         fi
     fi
 else
-    echo "mysql database selected."
-
+    #echo "mysql database selected."
+    RESULT=`mysqlshow --user=$4 --password=$5 $2| grep "Database: $2"`
+    echo $RESULT
+    if [ "$RESULT" == "Database: $2" ]; then
+        echo "database $2 already exists."
+    else
+        echo "database $2 does not exists."
+        mysql --user=$4 --password=$5 -e "create database $2"
+        mysql --user=$4 --password=$5 $2 < $3
+    fi
 fi

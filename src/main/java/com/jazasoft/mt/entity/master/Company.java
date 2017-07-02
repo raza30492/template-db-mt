@@ -5,6 +5,7 @@ import com.jazasoft.mt.entity.BaseEntity;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import java.util.Set;
  * Created by mdzahidraza on 26/06/17.
  */
 @Entity
-public class Company extends BaseEntity {
+public class Company extends BaseEntity implements Serializable{
 
     private String name;
 

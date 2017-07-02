@@ -4,12 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Created by mdzahidraza on 28/06/17.
  */
 @Entity
-public class UrlInterceptor {
+public class UrlInterceptor implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

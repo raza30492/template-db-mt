@@ -3,43 +3,26 @@ package com.jazasoft.mt.tenant;
 import com.jazasoft.mt.Constants;
 import com.jazasoft.mt.MyEvent;
 import com.jazasoft.mt.entity.master.Company;
-import com.jazasoft.mt.entity.tenant.Product;
 import com.jazasoft.mt.repository.master.CompanyRepository;
 import com.jazasoft.mt.util.ConfigUtility;
 import com.jazasoft.mt.util.ScriptUtility;
 import com.jazasoft.mt.util.Utils;
-import org.hibernate.HibernateException;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.beanvalidation.ValidationMode;
 import org.hibernate.engine.jdbc.connections.spi.AbstractDataSourceBasedMultiTenantConnectionProviderImpl;
-import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by mdzahidraza on 26/06/17.
@@ -139,14 +122,19 @@ public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMu
     private void initDb(String tenant) {
         LOGGER.info("initDb");
         String script = ConfigUtility.getInstance().getConfigProperty(Constants.DB_INIT_SCRIPT_FILENAME_KEY,null);
-        String schemaFile = ConfigUtility.getInstance().getConfigProperty(Constants.SCHEMA_INIT_FILENAME_KEY,null);
+        String schemaFile = null;
+        if (platform.equalsIgnoreCase("mysql")) {
+            schemaFile = ConfigUtility.getInstance().getConfigProperty(Constants.SCHEMA_MYSQL_INIT_FILENAME_KEY,null);
+        }else if (platform.equalsIgnoreCase("postgresql")) {
+            schemaFile = ConfigUtility.getInstance().getConfigProperty(Constants.SCHEMA_POSTGRESQL_INIT_FILENAME_KEY,null);
+        }
         if (script == null || schemaFile == null) {
             LOGGER.error("Database|Schema initialization file not specified.");
             return;
         }
         schemaFile = Utils.getAppHome() + File.separator + "conf" + File.separator + schemaFile;
         LOGGER.info("Executing: {} {} {} {}", script, platform, tenant, schemaFile);
-        int exitCode = ScriptUtility.execute("/bin/bash", script, platform, tenant, schemaFile);
+        int exitCode = ScriptUtility.execute("/bin/bash", script, platform, tenant, schemaFile, user, password);
         if (exitCode == 0) {
             LOGGER.info("Database initialized successfully for tenant = {}", tenant);
         }else {
