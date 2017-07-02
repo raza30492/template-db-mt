@@ -37,12 +37,16 @@ security:
     resource:
       id: TEST_RESOURCE
       filter-order: 3
-    client:
-      client1:
-        access-token-validity: 3600
-        refresh-token-validity: 7200
+    clients:
+      - access-token-validity: 43200
+        refresh-token-validity: 43200
         id: client
         secret: secret
+        scope: read,write,trust
+      - access-token-validity: 3600
+        refresh-token-validity: 7200
+        id: client-web
+        secret: secret-web
         scope: read,write,trust
 
 endpoints:
