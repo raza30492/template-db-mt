@@ -1,6 +1,7 @@
 package com.jazasoft.mt.entity.master;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -13,6 +14,8 @@ public class Role implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;

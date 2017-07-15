@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class RoleRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Role role){
+    public ResponseEntity<?> save(@Valid @RequestBody Role role){
         role = roleService.save(role);
         return ResponseEntity.ok(role);
     }

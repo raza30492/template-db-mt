@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class CompanyRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Company company){
+    public ResponseEntity<?> save(@Valid @RequestBody Company company){
         company = companyService.save(company);
         return ResponseEntity.ok(company);
     }

@@ -5,6 +5,7 @@ import com.jazasoft.mt.entity.BaseEntity;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,13 +16,18 @@ import java.util.Set;
 @Entity
 public class Company extends BaseEntity implements Serializable{
 
+    @NotNull
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
 
+    @NotNull
+    @Column(nullable = false)
     private String address;
 
-    @Column(name = "db_name")
+    @NotNull
+    @Column(nullable = false, unique = true)
     private String dbName;
 
     @JsonIgnore

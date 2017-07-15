@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class InterceptorRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveUrlInterceptor(@RequestBody UrlInterceptor interceptor){
+    public ResponseEntity<?> saveUrlInterceptor(@Valid @RequestBody UrlInterceptor interceptor){
         interceptor = interceptorService.save(interceptor);
         return ResponseEntity.ok(interceptor);
     }

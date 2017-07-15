@@ -5,12 +5,17 @@ import com.jazasoft.mt.entity.master.User;
 import com.jazasoft.mt.service.CompanyService;
 import com.jazasoft.mt.service.RoleService;
 import com.jazasoft.mt.service.UserService;
+import org.dozer.DozerBeanMapper;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -45,6 +50,13 @@ public class Application {
                 userService.save(user);
             }
         };
+    }
+
+    @Bean
+    public Mapper dozerBeanMapper() {
+        List<String> list = new ArrayList<>();
+        list.add("dozer_mapping.xml");
+        return new DozerBeanMapper(list);
     }
 
 }

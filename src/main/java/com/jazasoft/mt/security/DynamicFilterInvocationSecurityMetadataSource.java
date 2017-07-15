@@ -52,7 +52,7 @@ public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilter
                 builder.append("/").append(urls[i]);
             }
             url = builder.toString();
-            LOGGER.info("-$$$- Url = {}, method = {}", url, httpMethod);
+            LOGGER.debug("Request for Url = {}, method = {}", url, httpMethod);
             List<UrlInterceptor> interceptors = this.interceptorService.findAllByUrl(url);
 
             Collection<ConfigAttribute> configAttributes = interceptors.stream()
@@ -63,7 +63,7 @@ public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilter
             if (configAttributes.isEmpty()) {
                 configAttributes.add(new DynamicConfigAttribute("ROLE_UNKNOWN"));
             }
-            configAttributes.forEach(configAttribute -> System.out.println("-$$$- " + configAttribute.getAttribute()));
+            configAttributes.forEach(configAttribute -> LOGGER.debug("User Roles: " + configAttribute.getAttribute()));
             return configAttributes;
         }
         return null;

@@ -2,9 +2,13 @@ package com.jazasoft.mt.entity.master;
 
 import java.util.*;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jazasoft.mt.entity.BaseEntity;
+import org.springframework.hateoas.core.Relation;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,14 +16,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "users", indexes = @Index(columnList = "name,email,username"))
+@Relation(collectionRelation = "users", value = "user")
 public class User extends BaseEntity implements UserDetails{
 
+    @NotNull @Size(min = 3, max = 50)
     @Column(nullable = false)
     private String name;
 
+    @NotNull @Pattern(regexp="^(?=.*[a-zA-Z])[a-zA-Z0-9_\\-\\.]{3,50}$")
     @Column(nullable = false, unique = true)
     private String username;
 
+    @NotNull @Pattern(regexp="^(?=.*[a-zA-Z])[a-zA-Z0-9_\\-@\\.]{5,50}$")
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -27,6 +35,7 @@ public class User extends BaseEntity implements UserDetails{
     @Column(nullable = false)
     private String password;
 
+    @NotNull @Pattern(regexp="[0-9]{10}")
     private String mobile;
 
     @JsonIgnore

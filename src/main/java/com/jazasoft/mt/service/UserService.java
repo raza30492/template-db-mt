@@ -1,12 +1,16 @@
 package com.jazasoft.mt.service;
 
+import com.jazasoft.mt.dto.UserDto;
 import com.jazasoft.mt.entity.master.User;
 import com.jazasoft.mt.entity.tenant.MyRevisionEntity;
 import com.jazasoft.mt.repository.master.UserRepository;
+import org.dozer.Mapper;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
@@ -15,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,31 +28,86 @@ import java.util.List;
 @Service
 @Transactional(value = "masterTransactionManager")
 public class UserService {
+    private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     UserRepository userRepository;
 
-    @PersistenceContext
-    EntityManager entityManager;
+    @Autowired Mapper mapper;
+//
+//    @PersistenceContext
+//    EntityManager entityManager;
 
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public User findOne(Long id){
+
+    public User findOne(Long id) {
+        LOGGER.debug("findOne(): id = {}",id);
         return userRepository.findOne(id);
     }
 
     public List<User> findAll() {
+        LOGGER.debug("findAll()");
         return userRepository.findAll();
     }
 
+    public List<User> findAllAfter(long after) {
+        LOGGER.debug("findAllAfter(): after = {}" , after);
+        return userRepository.findByModifiedAtGreaterThan(new Date(after));
+    }
+
+    public User findByEmail(String email) {
+        LOGGER.debug("findByEmail(): email = {}",email);
+        return userRepository.findByEmail(email);
+    }
+
+    public User findByName(String name) {
+        LOGGER.debug("findByName(): name = " , name);
+        return userRepository.findByName(name);
+    }
+
+    public User findByUsername(String username) {
+        LOGGER.debug("findByUsername(): username = " , username);
+        return userRepository.findByUsername(username);
+    }
+
+    public Boolean exists(Long id) {
+        LOGGER.debug("exists(): id = ",id);
+        return userRepository.exists(id);
+    }
+
+    public Long count(){
+        LOGGER.debug("count()");
+        return userRepository.count();
+    }
+
+    @Transactional
     public User save(User user) {
-        if (user.getPassword() == null) {
-            user.setPassword(user.getMobile());
-        }
+        LOGGER.debug("save()");
+        user.setPassword(user.getMobile());
+        user.setEnabled(true);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public User update(UserDto userDto) {
+        LOGGER.debug("update()");
+        User user = userRepository.findOne(userDto.getId());
+        System.out.println("UserDto = " + userDto);
+        mapper.map(userDto,user);
+        System.out.println("User = " + user);
+        return user;
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        LOGGER.debug("delete(): id = {}",id);
+        User user = userRepository.findOne(id);
+        user.setEnabled(false);
+    }
+
 
     public User update(User user){
         User user2 = userRepository.findOne(user.getId());
@@ -60,47 +120,44 @@ public class UserService {
         return user2;
     }
 
-    public void findLastChangeRevision(Long id) {
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        List<Object[]> list = reader.createQuery()
-                .forRevisionsOfEntity(User.class,false,true)
-                .add(AuditEntity.id().eq(id))
-                .getResultList();
+//    public void findLastChangeRevision(Long id) {
+//        AuditReader reader = AuditReaderFactory.get(entityManager);
+//        List<Object[]> list = reader.createQuery()
+//                .forRevisionsOfEntity(User.class,false,true)
+//                .add(AuditEntity.id().eq(id))
+//                .getResultList();
+//
+//        list.forEach(l -> {
+//            User user = (User) l[0];
+//            MyRevisionEntity ur = (MyRevisionEntity)l[1];
+//            RevisionType revisionType = (RevisionType)l[2];
+//
+//            System.out.println("user = " + user);
+//            System.out.println("user_rev = " + ur);
+//            System.out.println("rev_type = " + revisionType.name());
+//        });
+//
+//
+//        Revision<Integer,User> revision = userRepository.findLastChangeRevision(id);
+//
+//        System.out.println("Last Change Revision: ");
+//        printRevision(revision);
+//
+//        System.out.println("All revisions: ");
+//        Revisions<Integer, User> revisions = userRepository.findRevisions(id);
+//        revisions.iterator().forEachRemaining(revisin -> {
+//            printRevision(revisin);
+//        });
+//    }
+//
+//    private void printRevision(Revision<Integer,User> revision) {
+//        System.out.println("Revision no = " +revision.getRevisionNumber());
+//        System.out.println("Revision date = " + revision.getRevisionDate());
+//        System.out.println("revision data = " + revision.getEntity());
+//        if (revision.getMetadata().getDelegate() != null){
+//            MyRevisionEntity entity = (MyRevisionEntity)revision.getMetadata().getDelegate();
+//            System.out.println("modifiedBy = " + entity.getUsername());
+//        }
+//    }
 
-        list.forEach(l -> {
-            User user = (User) l[0];
-            MyRevisionEntity ur = (MyRevisionEntity)l[1];
-            RevisionType revisionType = (RevisionType)l[2];
-
-            System.out.println("user = " + user);
-            System.out.println("user_rev = " + ur);
-            System.out.println("rev_type = " + revisionType.name());
-        });
-
-
-        Revision<Integer,User> revision = userRepository.findLastChangeRevision(id);
-
-        System.out.println("Last Change Revision: ");
-        printRevision(revision);
-
-        System.out.println("All revisions: ");
-        Revisions<Integer, User> revisions = userRepository.findRevisions(id);
-        revisions.iterator().forEachRemaining(revisin -> {
-            printRevision(revisin);
-        });
-    }
-
-    private void printRevision(Revision<Integer,User> revision) {
-        System.out.println("Revision no = " +revision.getRevisionNumber());
-        System.out.println("Revision date = " + revision.getRevisionDate());
-        System.out.println("revision data = " + revision.getEntity());
-        if (revision.getMetadata().getDelegate() != null){
-            MyRevisionEntity entity = (MyRevisionEntity)revision.getMetadata().getDelegate();
-            System.out.println("modifiedBy = " + entity.getUsername());
-        }
-    }
-
-    public long count() {
-        return userRepository.count();
-    }
 }
