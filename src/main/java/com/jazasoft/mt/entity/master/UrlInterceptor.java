@@ -1,9 +1,6 @@
 package com.jazasoft.mt.entity.master;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -25,6 +22,10 @@ public class UrlInterceptor implements Serializable {
 
     @NotNull
     private String access;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     public Long getId() {
         return id;
@@ -56,5 +57,13 @@ public class UrlInterceptor implements Serializable {
 
     public void setAccess(String access) {
         this.access = access;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

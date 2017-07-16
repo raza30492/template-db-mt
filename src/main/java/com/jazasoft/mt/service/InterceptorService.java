@@ -1,5 +1,6 @@
 package com.jazasoft.mt.service;
 
+import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.entity.master.UrlInterceptor;
 import com.jazasoft.mt.repository.master.UrlInterceptorRepository;
 import org.slf4j.Logger;
@@ -33,6 +34,10 @@ public class InterceptorService {
 
     public List<UrlInterceptor> findAllByUrl(String url) {
         return urlInterceptorRepository.findByUrl(url);
+    }
+
+    public List<UrlInterceptor> findAllByCompanyAndUrl(Company company, String url) {
+        return urlInterceptorRepository.findByCompanyAndUrl(company, url);
     }
 
     public List<UrlInterceptor> findAllByUrlContaining(String interceptor) {

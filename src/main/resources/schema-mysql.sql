@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `role` (
   `name` varchar(255) DEFAULT NULL,
   `company_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKjuqcxi07jmwxksjjokolg6jc7` (`company_id`),
-  CONSTRAINT `FKjuqcxi07jmwxksjjokolg6jc7` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  KEY `FK_role_company` (`company_id`),
+  CONSTRAINT `FK_role_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,8 +87,11 @@ CREATE TABLE IF NOT EXISTS `url_interceptor` (
   `access` varchar(255) DEFAULT NULL,
   `http_method` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  `company_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_url_interceptor_company` (`company_id`),
+  CONSTRAINT `FK_url_interceptor_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 

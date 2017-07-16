@@ -2,6 +2,7 @@ package com.jazasoft.mt.security;
 
 import com.jazasoft.mt.repository.master.UrlInterceptorRepository;
 import com.jazasoft.mt.service.InterceptorService;
+import com.jazasoft.mt.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.vote.ScopeVoter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -33,12 +38,16 @@ import java.util.LinkedHashMap;
 @EnableResourceServer
 public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final Logger LOGGER = LoggerFactory.getLogger(OAuth2ResourceServerConfig.class);
+    private final String RESOURCE_ID = "MT_RESOURCE";
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private InterceptorService interceptorService;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -65,6 +74,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
         DynamicFilterInvocationSecurityMetadataSource dynamicFilter = new DynamicFilterInvocationSecurityMetadataSource(
                 new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>());
         dynamicFilter.setInterceptorService(interceptorService);
+        dynamicFilter.setUserService(userService);
         FilterSecurityInterceptor filter = new FilterSecurityInterceptor();
         filter.setAuthenticationManager(authenticationManager);
         filter.setAccessDecisionManager(accessDecisionManager());

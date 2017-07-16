@@ -54,6 +54,12 @@ public class User extends BaseEntity implements UserDetails{
 
     private boolean credentialExpired;
 
+    @Transient
+    private Long companyId;
+
+    @Transient
+    private String roles;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
@@ -64,7 +70,7 @@ public class User extends BaseEntity implements UserDetails{
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roleList = new HashSet<>();
 
     public User() {
     }
@@ -92,7 +98,7 @@ public class User extends BaseEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> rls = new ArrayList<>();
-        for (Role role: roles) {
+        for (Role role: roleList) {
             rls.add(new SimpleGrantedAuthority(role.getName()));
         }
         return rls;
@@ -119,7 +125,7 @@ public class User extends BaseEntity implements UserDetails{
     }
 
     public void addRole(Role role){
-        roles.add(role);
+        roleList.add(role);
     }
 
     public String getName() {
@@ -200,8 +206,8 @@ public class User extends BaseEntity implements UserDetails{
         this.otpSentAt = otpSentAt;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Set<Role> getRoleList() {
+        return roleList;
     }
 
     public Company getCompany() {
@@ -210,6 +216,22 @@ public class User extends BaseEntity implements UserDetails{
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 
     @Override

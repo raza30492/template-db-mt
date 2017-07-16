@@ -9,12 +9,13 @@ INSERT INTO users (id, modified_at, enabled, account_expired, account_locked, cr
 
 INSERT INTO user_role (user_id, role_id) VALUES
 (1,	1),
-(2, 1),
+(2, 2),
 (3, 1);
 
 INSERT INTO url_interceptor (id, access, http_method, url) VALUES
 (1,	'ROLE_MASTER',	'POST', '/api/users'),
 (2,	'ROLE_MASTER',	'GET',	'/api/users'),
+(33,	'ROLE_ADMIN',	'GET',	'/api/users'),
 (3,	'ROLE_MASTER',	'GET',	'/api/users/{\\d+}'),
 (4,	'ROLE_MASTER',	'PUT',	'/api/users/{\\d+}'),
 (5,	'ROLE_MASTER',	'PATCH',	'/api/users/{\\d+}'),

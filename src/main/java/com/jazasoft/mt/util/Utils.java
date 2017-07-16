@@ -2,6 +2,8 @@ package com.jazasoft.mt.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utils.
@@ -21,5 +23,16 @@ public class Utils {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<String> getRoleList(String roles) {
+        List<String> result = new ArrayList<>();
+        String[] rls = roles.split(",");
+        for (String r: rls) {
+            if (r.trim().length() != 0) {
+                result.add(r.trim());
+            }
+        }
+        return result;
     }
 }

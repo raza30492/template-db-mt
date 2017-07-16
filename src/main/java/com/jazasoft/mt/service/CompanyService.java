@@ -63,5 +63,7 @@ public class CompanyService implements ApplicationEventPublisherAware {
         return companyRepository.count();
     }
 
-
+    public boolean exists(Long id) {
+        return companyRepository.exists(id);
+    }
 }

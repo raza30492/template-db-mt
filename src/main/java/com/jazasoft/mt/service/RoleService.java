@@ -48,4 +48,12 @@ public class RoleService {
     public long count() {
         return roleRepository.count();
     }
+
+    public boolean exists(Long id) {
+        return roleRepository.exists(id);
+    }
+
+    public boolean exists(String role) {
+        return roleRepository.findOneByName("ROLE_" + role).isPresent();
+    }
 }

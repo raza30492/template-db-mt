@@ -1,10 +1,16 @@
 package com.jazasoft.mt.restcontroller;
 
 import com.jazasoft.mt.ApiUrls;
+import com.jazasoft.mt.Constants;
 import com.jazasoft.mt.assember.UserAssembler;
+import com.jazasoft.mt.dto.RestError;
 import com.jazasoft.mt.dto.UserDto;
+import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.entity.master.User;
+import com.jazasoft.mt.service.CompanyService;
+import com.jazasoft.mt.service.RoleService;
 import com.jazasoft.mt.service.UserService;
+import com.jazasoft.mt.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -33,12 +40,24 @@ public class UserRestController {
     @Autowired UserService userService;  //Service which will do all data retrieval/manipulation work
 
     @Autowired
+    CompanyService companyService;
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
     UserAssembler userAssembler;
 
     @GetMapping
-    public ResponseEntity<?> listAllUsers(@RequestParam(value = "after", defaultValue = "0") Long after) {
-        logger.debug("listAllUsers()");
-        List<User> users = userService.findAllAfter(after);
+    public ResponseEntity<?> listAllUsers(HttpServletRequest req, @RequestParam(value = "after", defaultValue = "0") Long after) {
+        Company company = (Company)req.getAttribute(Constants.CURRENT_TENANT);
+        logger.debug("listAllUsers(): tenant = {}", company != null ? company.getName() : "");
+        List<User> users;
+        if (company != null) {
+            users = userService.findAllByCompanyAfter(company, after);
+        }else {
+            users = userService.findAllAfter(after);
+        }
         Resources resources = new Resources(userAssembler.toResources(users), linkTo(UserRestController.class).withSelfRel());
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
@@ -53,29 +72,28 @@ public class UserRestController {
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
     }
 
-    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_NAME)
-    public ResponseEntity<?> searchByName(@RequestParam("name") String name){
-        logger.debug("searchByName(): name = {}",name);
-        User user = userService.findByName(name);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
-    }
-
-    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
-    public ResponseEntity<?> searchByEmail(@RequestParam("email") String email){
-        logger.debug("searchByName(): name = {}",email);
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
-    }
-
     @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         logger.debug("createUser():\n {}", user.toString());
+        RestError error;
+        if (user.getCompanyId() != null && !companyService.exists(user.getCompanyId())) {
+            error = new RestError(404, 40401,"Company with Id=" + user.getCompanyId() + " not found","","");
+            return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+        }
+        else if (user.getRoles() != null) {
+            StringBuilder builder = new StringBuilder();
+            for(String role: Utils.getRoleList(user.getRoles())){
+                if (!roleService.exists(role)){
+                    builder.append(role).append(",");
+                }
+            }
+            if (builder.length() > 0) {
+                builder.setLength(builder.length()-1);
+                error = new RestError(404, 40401,"["+builder.toString() +"] not found","","");
+                return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+            }
+        }
+
         user = userService.save(user);
         Link selfLink = linkTo(UserRestController.class).slash(user.getId()).withSelfRel();
         return ResponseEntity.created(URI.create(selfLink.getHref())).build();
@@ -100,5 +118,30 @@ public class UserRestController {
         }
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_USERNAME)
+    public ResponseEntity<?> searchByName(@RequestParam("username") String username){
+        logger.debug("searchByUsername(): username = {}",username);
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+    }
+
+    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
+    public ResponseEntity<?> searchByEmail(@RequestParam("email") String email){
+        logger.debug("searchByName(): name = {}",email);
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+    }
+
+    @PutMapping(ApiUrls.URL_USERS_USER_PROFILE)
+    public ResponseEntity<?> updateProfile() {
+        return null;
     }
 }

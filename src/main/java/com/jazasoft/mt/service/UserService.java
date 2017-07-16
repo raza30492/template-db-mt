@@ -1,9 +1,13 @@
 package com.jazasoft.mt.service;
 
 import com.jazasoft.mt.dto.UserDto;
+import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.entity.master.User;
 import com.jazasoft.mt.entity.tenant.MyRevisionEntity;
+import com.jazasoft.mt.repository.master.CompanyRepository;
+import com.jazasoft.mt.repository.master.RoleRepository;
 import com.jazasoft.mt.repository.master.UserRepository;
+import com.jazasoft.mt.util.Utils;
 import org.dozer.Mapper;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -33,6 +37,10 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired Mapper mapper;
+
+    @Autowired CompanyRepository companyRepository;
+
+    @Autowired RoleRepository roleRepository;
 //
 //    @PersistenceContext
 //    EntityManager entityManager;
@@ -58,19 +66,19 @@ public class UserService {
         return userRepository.findByModifiedAtGreaterThan(new Date(after));
     }
 
-    public User findByEmail(String email) {
-        LOGGER.debug("findByEmail(): email = {}",email);
-        return userRepository.findByEmail(email);
+    public List<User> findAllByCompanyAfter(Company company, long after) {
+        LOGGER.debug("findAllAfter(): after = {}" , after);
+        return userRepository.findByModifiedAtGreaterThanAndCompany(new Date(after), company);
     }
 
-    public User findByName(String name) {
-        LOGGER.debug("findByName(): name = " , name);
-        return userRepository.findByName(name);
+    public User findByEmail(String email) {
+        LOGGER.debug("findByEmail(): email = {}",email);
+        return userRepository.findOneByEmail(email).get();
     }
 
     public User findByUsername(String username) {
         LOGGER.debug("findByUsername(): username = " , username);
-        return userRepository.findByUsername(username);
+        return userRepository.findOneByUsername(username).get();
     }
 
     public Boolean exists(Long id) {
@@ -88,6 +96,12 @@ public class UserService {
         LOGGER.debug("save()");
         user.setPassword(user.getMobile());
         user.setEnabled(true);
+        if (user.getCompanyId() != null) {
+            user.setCompany(companyRepository.findOne(user.getCompanyId()));
+        }
+        if (user.getRoles() != null) {
+            Utils.getRoleList(user.getRoles()).stream().forEach(role -> user.addRole(roleRepository.findOneByName("ROLE_"+role).get()));
+        }
         return userRepository.save(user);
     }
 

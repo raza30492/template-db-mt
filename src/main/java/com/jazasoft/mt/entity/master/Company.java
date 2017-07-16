@@ -31,8 +31,12 @@ public class Company extends BaseEntity implements Serializable{
     private String dbName;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company")
     private Set<User> users = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "company")
+    private Set<Role> roles = new HashSet<>();
 
     public Company() {
     }
@@ -75,5 +79,17 @@ public class Company extends BaseEntity implements Serializable{
 
     public void addUser(User user) {
         this.users.add(user);
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

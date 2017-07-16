@@ -43,7 +43,8 @@ public class UserIntegrationTest {
 
     private final String contentType = "application/hal+json;charset=UTF-8";
 
-    private String accessToken = "";
+    private String accessToken1 = "";
+    private String accessToken2 = "";
 
 
     @Before
@@ -59,30 +60,50 @@ public class UserIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
         String resp = mvcResult.getResponse().getContentAsString();
+        System.out.println(resp);
         OauthResponse oauthResponse = mapper.readValue(resp, OauthResponse.class);
-        accessToken = oauthResponse.getAccess_token();
+        accessToken1 = oauthResponse.getAccess_token();
+
+        params.clear();
+        params.add("grant_type","password");
+        params.add("username","taufeeque8");
+        params.add("password","admin");
+        mvcResult = mvc
+                .perform(post(ApiUrls.OAUTH_URL)
+                .params(params)
+                .header("Authorization","Basic Y2xpZW50OnNlY3JldA==")
+        )
+                .andExpect(status().isOk())
+                .andReturn();
+        resp = mvcResult.getResponse().getContentAsString();
+        System.out.println(resp);
+        oauthResponse = mapper.readValue(resp, OauthResponse.class);
+        accessToken2 = oauthResponse.getAccess_token();
     }
 
     @Test
     public void getAllUser() throws Exception{
-        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS).header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS).header("Authorization","Bearer " + accessToken1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$._embedded.users",hasSize(3)))
                 .andExpect(jsonPath("$._embedded.users[0].name",is("Md Zahid Raza")))
                 .andExpect(jsonPath("$._embedded.users[0]._links.self").exists());
+
+        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS).header("Authorization","Bearer " + accessToken2))
+                .andExpect(status().isForbidden());
     }
 
 
     @Test
     public void getUser() throws Exception{
-        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS +"/1").header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS +"/1").header("Authorization","Bearer " + accessToken1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.name", is("Md Zahid Raza")))
                 .andExpect(jsonPath("$._links.self").exists());
 
-        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS +"/10").header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS +"/10").header("Authorization","Bearer " + accessToken1))
                 .andExpect(status().isNotFound());
     }
 
@@ -94,7 +115,7 @@ public class UserIntegrationTest {
         MvcResult mvcResult = mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -104,15 +125,15 @@ public class UserIntegrationTest {
         int idx = locationUri.lastIndexOf('/');
         String id = locationUri.substring(idx+1);
 
-        this.mvc.perform(get( ApiUrls.ROOT_URL_USERS +"/{id}",id).header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(get( ApiUrls.ROOT_URL_USERS +"/{id}",id).header("Authorization","Bearer " + accessToken1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.name", is("Test UserDto")));
 
-        this.mvc.perform(delete(ApiUrls.ROOT_URL_USERS + "/{id}", id).header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(delete(ApiUrls.ROOT_URL_USERS + "/{id}", id).header("Authorization","Bearer " + accessToken1))
                 .andExpect(status().isNoContent());
 
-        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS + "/{id}", id).header("Authorization","Bearer " + accessToken))
+        this.mvc.perform(get(ApiUrls.ROOT_URL_USERS + "/{id}", id).header("Authorization","Bearer " + accessToken1))
                 .andExpect(jsonPath("$.enabled", is(false)));
     }
 
@@ -122,7 +143,7 @@ public class UserIntegrationTest {
         this.mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(4)));
@@ -132,7 +153,7 @@ public class UserIntegrationTest {
         this.mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -143,7 +164,7 @@ public class UserIntegrationTest {
         this.mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -153,7 +174,7 @@ public class UserIntegrationTest {
         this.mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -165,7 +186,7 @@ public class UserIntegrationTest {
         this.mvc.perform(post(ApiUrls.ROOT_URL_USERS)
                 .content(mapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .header("Authorization","Bearer " + accessToken)
+                .header("Authorization","Bearer " + accessToken1)
         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", hasSize(1)))
