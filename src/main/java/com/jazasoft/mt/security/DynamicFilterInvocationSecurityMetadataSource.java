@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Here, Decision is made about which roles are authorised for a particular resource
+ * Here, Decision is made about which roles are authorized for a particular resource
  * Created by mdzahidraza on 28/06/17.
  */
 public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilterInvocationSecurityMetadataSource {
@@ -81,15 +81,17 @@ public class DynamicFilterInvocationSecurityMetadataSource extends DefaultFilter
                         return getForbiddenAttribute();
                     }
                 }
+                // Every one is allowed access profile|other  resource
+                else if(url.contains(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
+                        || url.contains(ApiUrls.URL_USERS_USER_SEARCH_BY_USERNAME)
+                        || url.contains(ApiUrls.URL_USERS_USER_PROFILE)) {
+                    return new ArrayList<>();
+                }
                 //Only Master and Admin are authorized for User,Role,UrlInterceptor Resource
                 else if (url.contains(ApiUrls.ROOT_URL_USERS) || url.contains(ApiUrls.ROOT_URL_ROLES) || url.contains(ApiUrls.ROOT_URL_INTERCEPTORS)){
                     Collection<ConfigAttribute> attributes = getMasterAttribute();
                     attributes.add(new DynamicConfigAttribute(Constants.ROLE_ADMIN));
                     return attributes;
-                }
-                // Every one is allowed access profile|other  resource TODO: segragate public type resource in separate api
-                else if(url.contains(ApiUrls.URL_USERS_USER_PROFILE)) {
-                    return new ArrayList<>();
                 }
                 // Tenant specific Resource. dynamic role management. Admin will have access to all resources
                 else {

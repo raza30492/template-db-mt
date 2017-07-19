@@ -25,6 +25,8 @@ public class UserDto {
     @Pattern(regexp="[0-9]{10}")
     private String mobile;
 
+    private String roles;
+
     private Boolean enabled;
 
     public UserDto() {
@@ -91,6 +93,14 @@ public class UserDto {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 
     @Override

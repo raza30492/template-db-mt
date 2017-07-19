@@ -5,6 +5,7 @@ import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.repository.master.CompanyRepository;
 import com.jazasoft.mt.tenant.MultiTenantConnectionProviderImpl;
 import com.jazasoft.mt.util.ApplicationContextUtil;
+import org.dozer.Mapper;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ public class CompanyService implements ApplicationEventPublisherAware {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired Mapper mapper;
+
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.publisher = applicationEventPublisher;
@@ -56,7 +59,21 @@ public class CompanyService implements ApplicationEventPublisherAware {
     public Company save(Company company) {
         LOGGER.debug("save: company = {}", company);
         publisher.publishEvent(new MyEvent(applicationContext,company.getDbName()));
+        company.setEnabled(true);
         return companyRepository.save(company);
+    }
+
+    public Company update(Company company) {
+        LOGGER.debug("update: ");
+        Company company2 = companyRepository.findOne(company.getId());
+        mapper.map(company,company2);
+        return company2;
+    }
+
+    public void delete(Long id) {
+        LOGGER.debug("delete: id = {}", id);
+        Company company = companyRepository.findOne(id);
+        company.setEnabled(false);
     }
     
     public long count() {

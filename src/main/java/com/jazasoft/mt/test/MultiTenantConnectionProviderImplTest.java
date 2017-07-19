@@ -1,4 +1,4 @@
-package com.jazasoft.mt.tenant;
+package com.jazasoft.mt.test;
 
 import com.jazasoft.mt.Constants;
 import com.jazasoft.mt.MyEvent;
@@ -15,7 +15,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +35,12 @@ import java.util.Map;
 
 @Component
 @Transactional(value="masterTransactionManager", readOnly = true)
-@Profile("prod")
-public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl implements ApplicationListener<ContextRefreshedEvent>{
+@Profile("test")
+public class MultiTenantConnectionProviderImplTest extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl implements ApplicationListener<ContextRefreshedEvent>{
 
     private static final long serialVersionUID = 6246085840652870138L;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MultiTenantConnectionProviderImplTest.class);
 
     private Map<String, DataSource> map; // map holds the companyKey => DataSource
 
@@ -107,11 +111,11 @@ public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMu
         LOGGER.debug("addDatasource");
         DataSource dataSource = getDatasource(tenantIdentifier);
         map.put(tenantIdentifier, dataSource);
-        initDb(tenantIdentifier);
+        initDb(dataSource);
     }
 
     private DataSource getDatasource(String tenantId) {
-        String newUrl = url.replace(Utils.databaseNameFromJdbcUrl(url), tenantId);
+        String newUrl = url.replace("tnt_db_master", tenantId);
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(dataSourceClassName);
         dataSource.setUrl(newUrl);
@@ -121,27 +125,13 @@ public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMu
     }
 
 
-    private void initDb(String tenant) {
+    private void initDb(DataSource dataSource) {
         LOGGER.info("initDb");
-        String script = ConfigUtility.getInstance().getConfigProperty(Constants.DB_INIT_SCRIPT_FILENAME_KEY,null);
-        String schemaFile = null;
-        if (platform.equalsIgnoreCase("mysql")) {
-            schemaFile = ConfigUtility.getInstance().getConfigProperty(Constants.SCHEMA_MYSQL_INIT_FILENAME_KEY,null);
-        }else if (platform.equalsIgnoreCase("postgresql")) {
-            schemaFile = ConfigUtility.getInstance().getConfigProperty(Constants.SCHEMA_POSTGRESQL_INIT_FILENAME_KEY,null);
-        }
-        if (script == null || schemaFile == null) {
-            LOGGER.error("Database|Schema initialization file not specified.");
-            return;
-        }
-        schemaFile = Utils.getAppHome() + File.separator + "conf" + File.separator + schemaFile;
-        LOGGER.info("Executing: {} {} {} {}", script, platform, tenant, schemaFile);
-        int exitCode = ScriptUtility.execute("/bin/bash", script, platform, tenant, schemaFile, user, password);
-        if (exitCode == 0) {
-            LOGGER.info("Database initialized successfully for tenant = {}", tenant);
-        }else {
-            LOGGER.info("Database initialization failed for tenant = {} with exitCode = {}", tenant,exitCode);
-        }
+        Resource resource = new ClassPathResource("h2-schema.sql");
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(resource);
+        populator.setContinueOnError(false);
+        DatabasePopulatorUtils.execute(populator , dataSource);
 
     }
 

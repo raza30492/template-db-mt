@@ -21,4 +21,6 @@ public interface UserRepository extends RevisionRepository<User,Long,Integer>, J
     List<User> findByModifiedAtGreaterThan(Date updatedAt);
 
     List<User> findByModifiedAtGreaterThanAndCompany(Date updatedAt, Company company);
+
+    Optional<User> findOneByCompanyAndId(Company company, Long id);
 }

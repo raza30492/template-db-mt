@@ -2,7 +2,9 @@ package com.jazasoft.mt.service;
 
 import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.entity.master.UrlInterceptor;
+import com.jazasoft.mt.repository.master.CompanyRepository;
 import com.jazasoft.mt.repository.master.UrlInterceptorRepository;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +12,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Created by mdzahidraza on 28/06/17.
+ * Created by mdzahidraza on 26/06/17.
  */
 @Service
-@Transactional
+@Transactional(value = "masterTransactionManager")
 public class InterceptorService {
-
     private final Logger LOGGER = LoggerFactory.getLogger(InterceptorService.class);
 
     private UrlInterceptorRepository urlInterceptorRepository;
+
+    @Autowired CompanyRepository companyRepository;
+
+    @Autowired Mapper mapper;
 
     @Autowired
     public InterceptorService(UrlInterceptorRepository urlInterceptorRepository) {
@@ -32,29 +38,55 @@ public class InterceptorService {
         return urlInterceptorRepository.findOne(id);
     }
 
-    public List<UrlInterceptor> findAllByUrl(String url) {
-        return urlInterceptorRepository.findByUrl(url);
-    }
-
-    public List<UrlInterceptor> findAllByCompanyAndUrl(Company company, String url) {
-        return urlInterceptorRepository.findByCompanyAndUrl(company, url);
-    }
-
-    public List<UrlInterceptor> findAllByUrlContaining(String interceptor) {
-        return urlInterceptorRepository.findByUrlContaining(interceptor);
-    }
-
     public List<UrlInterceptor> findAll(){
         LOGGER.debug("findAll");
         return urlInterceptorRepository.findAll();
     }
 
-    public UrlInterceptor save(UrlInterceptor interceptor) {
-        LOGGER.debug("save: interceptor = {}", interceptor);
-        return urlInterceptorRepository.save(interceptor);
+    public List<UrlInterceptor> findAll(Company company){
+        LOGGER.debug("findAll: company = {}", company.getName());
+        if (company != null) {
+            return urlInterceptorRepository.findByCompany(company);
+        }
+        return urlInterceptorRepository.findAll();
+    }
+
+    public List<UrlInterceptor> findAllByCompanyAndUrl(Company company, String url) {
+        LOGGER.debug("findAllByCompanyAndUrl: company = {}, url = {}", company.getName(), url);
+        return urlInterceptorRepository.findByCompanyAndUrl(company,url);
+    }
+
+    public UrlInterceptor save(UrlInterceptor urlInterceptor) {
+        LOGGER.debug("save:");
+        if (urlInterceptor.getCompanyId() != null) {
+            urlInterceptor.setCompany(companyRepository.findOne(urlInterceptor.getCompanyId()));
+        }
+        return urlInterceptorRepository.save(urlInterceptor);
+    }
+
+    public UrlInterceptor update(UrlInterceptor urlInterceptor) {
+        LOGGER.debug("update()");
+        UrlInterceptor urlInterceptor2 = urlInterceptorRepository.findOne(urlInterceptor.getId());
+        mapper.map(urlInterceptor, urlInterceptor2);
+        return urlInterceptor2;
+    }
+
+    public void delete(Long id) {
+        LOGGER.debug("save: urlInterceptorId = {}", id);
+        urlInterceptorRepository.delete(id);
     }
 
     public long count() {
         return urlInterceptorRepository.count();
     }
+
+    public boolean exists(Long id) {
+        return urlInterceptorRepository.exists(id);
+    }
+
+    public boolean exists(Company company, Long id) {
+        LOGGER.debug("exists(): tenant = {} id = {}",company.getName(),id);
+        return urlInterceptorRepository.findOneByCompanyAndId(company, id).isPresent();
+    }
+
 }

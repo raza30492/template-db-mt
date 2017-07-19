@@ -21,7 +21,7 @@ public class UserAssembler extends ResourceAssemblerSupport<User, Resource>{
 
     @Override
     public Resource toResource(User userDto) {
-        return new Resource<>(userDto, linkTo(methodOn(UserRestController.class).getUser(userDto.getId())).withSelfRel());
+        return new Resource<>(userDto, linkTo(methodOn(UserRestController.class).getUser(null,userDto.getId())).withSelfRel());
     }
 
     @Override

@@ -86,6 +86,11 @@ public class UserService {
         return userRepository.exists(id);
     }
 
+    public boolean exists(Company company, Long id) {
+        LOGGER.debug("exists(): tenant = {} id = {}",company.getName(),id);
+        return userRepository.findOneByCompanyAndId(company, id).isPresent();
+    }
+
     public Long count(){
         LOGGER.debug("count()");
         return userRepository.count();
@@ -109,9 +114,11 @@ public class UserService {
     public User update(UserDto userDto) {
         LOGGER.debug("update()");
         User user = userRepository.findOne(userDto.getId());
-        System.out.println("UserDto = " + userDto);
         mapper.map(userDto,user);
-        System.out.println("User = " + user);
+        if (userDto.getRoles() != null) {
+            user.getRoleList().clear();
+            Utils.getRoleList(user.getRoles()).stream().forEach(role -> user.addRole(roleRepository.findOneByName("ROLE_"+role).get()));
+        }
         return user;
     }
 

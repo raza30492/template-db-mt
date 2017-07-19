@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+   http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <mapping map-null="false">
+        <class-a>com.jazasoft.mt.dto.UserDto</class-a>
+        <class-b>com.jazasoft.mt.entity.master.User</class-b>
+    </mapping>
+    <mapping map-null="false">
+        <class-a>com.jazasoft.mt.entity.master.Role</class-a>
+        <class-b>com.jazasoft.mt.entity.master.Role</class-b>
+    </mapping>
+    <mapping map-null="false">
+        <class-a>com.jazasoft.mt.entity.master.UrlInterceptor</class-a>
+        <class-b>com.jazasoft.mt.entity.master.UrlInterceptor</class-b>
+    </mapping>
+</mappings>

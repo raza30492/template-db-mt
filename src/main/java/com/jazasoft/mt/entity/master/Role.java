@@ -24,6 +24,9 @@ public class Role implements Serializable{
     @JoinColumn(name = "company_id")
     private Company company;
 
+    @Transient
+    private Long companyId;
+
     public Long getId() {
         return id;
     }
@@ -62,6 +65,14 @@ public class Role implements Serializable{
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     @Override

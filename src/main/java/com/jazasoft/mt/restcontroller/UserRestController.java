@@ -39,14 +39,11 @@ public class UserRestController {
 
     @Autowired UserService userService;  //Service which will do all data retrieval/manipulation work
 
-    @Autowired
-    CompanyService companyService;
+    @Autowired CompanyService companyService;
 
-    @Autowired
-    RoleService roleService;
+    @Autowired RoleService roleService;
 
-    @Autowired
-    UserAssembler userAssembler;
+    @Autowired UserAssembler userAssembler;
 
     @GetMapping
     public ResponseEntity<?> listAllUsers(HttpServletRequest req, @RequestParam(value = "after", defaultValue = "0") Long after) {
@@ -63,7 +60,7 @@ public class UserRestController {
     }
 
     @GetMapping(ApiUrls.URL_USERS_USER)
-    public ResponseEntity<?> getUser(@PathVariable("userId") long id) {
+    public ResponseEntity<?> getUser(HttpServletRequest req, @PathVariable("userId") long id) {
         logger.debug("getUser(): id = {}",id);
         User user = userService.findOne(id);
         if (user == null) {
@@ -73,14 +70,19 @@ public class UserRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-        logger.debug("createUser():\n {}", user.toString());
-        RestError error;
-        if (user.getCompanyId() != null && !companyService.exists(user.getCompanyId())) {
-            error = new RestError(404, 40401,"Company with Id=" + user.getCompanyId() + " not found","","");
-            return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> createUser(HttpServletRequest req, @Valid @RequestBody User user) {
+        Company company = (Company)req.getAttribute(Constants.CURRENT_TENANT);
+        logger.debug("createUser(): tenant= {}", company != null ? company.getName() : "");
+
+        if (company != null) {
+            user.setCompany(company);
+        }else {
+            if (user.getCompanyId() != null && !companyService.exists(user.getCompanyId())) {
+                RestError error = new RestError(404, 40401,"Company with Id=" + user.getCompanyId() + " not found","","");
+                return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+            }
         }
-        else if (user.getRoles() != null) {
+        if (user.getRoles() != null) {
             StringBuilder builder = new StringBuilder();
             for(String role: Utils.getRoleList(user.getRoles())){
                 if (!roleService.exists(role)){
@@ -89,53 +91,79 @@ public class UserRestController {
             }
             if (builder.length() > 0) {
                 builder.setLength(builder.length()-1);
-                error = new RestError(404, 40401,"["+builder.toString() +"] not found","","");
+                RestError error = new RestError(404, 40401,"["+builder.toString() +"] not found","","");
                 return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
             }
         }
-
         user = userService.save(user);
         Link selfLink = linkTo(UserRestController.class).slash(user.getId()).withSelfRel();
         return ResponseEntity.created(URI.create(selfLink.getHref())).build();
     }
 
     @PatchMapping(ApiUrls.URL_USERS_USER)
-    public ResponseEntity<?> updateUser(@PathVariable("userId") long id,@Validated @RequestBody UserDto userDto) {
-        logger.debug("updateUser(): id = {}",id);
+    public ResponseEntity<?> updateUser(HttpServletRequest req, @PathVariable("userId") long id,@Validated @RequestBody UserDto userDto) {
+        Company company = (Company)req.getAttribute(Constants.CURRENT_TENANT);
+        logger.debug("updateUser(): tenant ={}, id = {}",company != null ? company.getName() : "", id);
         if (!userService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if (company != null && !userService.exists(company, id)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        if (userDto.getRoles() != null) {
+            StringBuilder builder = new StringBuilder();
+            for(String role: Utils.getRoleList(userDto.getRoles())){
+                if (!roleService.exists(role)){
+                    builder.append(role).append(",");
+                }
+            }
+            if (builder.length() > 0) {
+                builder.setLength(builder.length()-1);
+                RestError error = new RestError(404, 40401,"["+builder.toString() +"] not found","","");
+                return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+            }
+        }
         userDto.setId(id);
         User user = userService.update(userDto);
-        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+        return ResponseEntity.ok(userAssembler.toResource(user));
     }
 
     @DeleteMapping(ApiUrls.URL_USERS_USER)
-    public ResponseEntity<Void> deleteUser(@PathVariable("userId") long id) {
-        logger.debug("deleteUser(): id = {}",id);
+    public ResponseEntity<Void> deleteUser(HttpServletRequest req, @PathVariable("userId") long id) {
+        Company company = (Company)req.getAttribute(Constants.CURRENT_TENANT);
+        logger.debug("deleteUser(): tenant = {} id = {}",company != null ? company.getName() : "",id);
         if (!userService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (company != null && !userService.exists(company, id)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_USERNAME)
-    public ResponseEntity<?> searchByName(@RequestParam("username") String username){
+    public ResponseEntity<?> searchByName(HttpServletRequest req, @RequestParam("username") String username){
         logger.debug("searchByUsername(): username = {}",username);
+        Long userId = (Long) req.getAttribute(Constants.CURRENT_USER);
         User user = userService.findByUsername(username);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else if (userId != null && user.getId() != userId) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
     }
 
     @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
-    public ResponseEntity<?> searchByEmail(@RequestParam("email") String email){
+    public ResponseEntity<?> searchByEmail(HttpServletRequest req, @RequestParam("email") String email){
         logger.debug("searchByName(): name = {}",email);
+        Long userId = (Long) req.getAttribute(Constants.CURRENT_USER);
         User user = userService.findByEmail(email);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else if (userId != null && user.getId() != userId) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
     }

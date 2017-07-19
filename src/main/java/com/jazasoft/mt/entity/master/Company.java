@@ -41,6 +41,13 @@ public class Company extends BaseEntity implements Serializable{
     public Company() {
     }
 
+    public Company(String name, String description, String address, String dbName) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.dbName = dbName;
+    }
+
     public String getName() {
         return name;
     }

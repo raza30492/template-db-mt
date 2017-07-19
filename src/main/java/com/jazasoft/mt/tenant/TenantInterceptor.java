@@ -93,9 +93,13 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
                     }
                     //Other Users can access master only for profile
                     else {
-                        if (url.contains(ApiUrls.URL_USERS_USER_PROFILE)) {
+                        if(url.contains(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
+                                || url.contains(ApiUrls.URL_USERS_USER_SEARCH_BY_USERNAME)
+                                || url.contains(ApiUrls.URL_USERS_USER_PROFILE)) {
+
                             req.setAttribute(Constants.CURRENT_TENANT_IDENTIFIER, Constants.TENANT_MASTER);
-                            //TODO: add user specific attribute if required
+                            //TODO: add user specific attribute if required. UserId can be set to restrict resource access related to that particular user
+                            req.setAttribute(Constants.CURRENT_USER, user.getId());
                         }else {
                             req.setAttribute(Constants.CURRENT_TENANT_IDENTIFIER, user.getCompany().getDbName());
                         }

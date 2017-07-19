@@ -1,7 +1,10 @@
 package com.jazasoft.mt.service;
 
+import com.jazasoft.mt.entity.master.Company;
 import com.jazasoft.mt.entity.master.Role;
+import com.jazasoft.mt.repository.master.CompanyRepository;
 import com.jazasoft.mt.repository.master.RoleRepository;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,10 @@ public class RoleService {
     private final Logger LOGGER = LoggerFactory.getLogger(RoleService.class);
 
     private RoleRepository roleRepository;
+    
+    @Autowired CompanyRepository companyRepository;
+
+    @Autowired Mapper mapper;
 
     @Autowired
     public RoleService(RoleRepository roleRepository) {
@@ -40,9 +47,27 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
+    public List<Role> findAll(Company company){
+        LOGGER.debug("findAll: company = {}", company.getName());
+        if (company != null) {
+            return roleRepository.findByCompany(company);
+        }
+        return roleRepository.findAll();
+    }
+    
     public Role save(Role role) {
         LOGGER.debug("save: role = {}", role);
+        if (role.getCompanyId() != null) {
+            role.setCompany(companyRepository.findOne(role.getCompanyId()));
+        }
         return roleRepository.save(role);
+    }
+
+    public Role update(Role role) {
+        LOGGER.debug("update()");
+        Role role2 = roleRepository.findOne(role.getId());
+        mapper.map(role, role2);
+        return role2;
     }
 
     public long count() {
@@ -51,6 +76,11 @@ public class RoleService {
 
     public boolean exists(Long id) {
         return roleRepository.exists(id);
+    }
+
+    public boolean exists(Company company, Long id) {
+        LOGGER.debug("exists(): tenant = {} id = {}",company.getName(),id);
+        return roleRepository.findOneByCompanyAndId(company, id).isPresent();
     }
 
     public boolean exists(String role) {
