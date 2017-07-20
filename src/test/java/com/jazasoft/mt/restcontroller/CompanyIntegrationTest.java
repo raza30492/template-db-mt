@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "test")
-//@Ignore
+@Ignore
 public class CompanyIntegrationTest {
 
     @Autowired  MockMvc mvc;

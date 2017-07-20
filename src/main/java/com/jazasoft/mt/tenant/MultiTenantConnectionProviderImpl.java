@@ -31,7 +31,7 @@ import java.util.Map;
 
 @Component
 @Transactional(value="masterTransactionManager", readOnly = true)
-@Profile("prod")
+//@Profile("prod")
 public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl implements ApplicationListener<ContextRefreshedEvent>{
 
     private static final long serialVersionUID = 6246085840652870138L;
